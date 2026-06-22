@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProductStatus, ProductType } from '../constants/enums';
+import { ProductStatus, ProductType, ProductScope } from '../constants/enums';
 
 const packagingSchema = z.object({
   size: z.string().optional(),
@@ -42,9 +42,10 @@ export const createProductSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     genericName: z.string().optional(),
     brandName: z.string().optional(),
-    category: z.string().min(1, 'Category ID is required'),
+    categories: z.array(z.string()).min(1, 'At least one Category ID is required'),
     tags: z.array(z.string()).optional(),
     productType: z.nativeEnum(ProductType),
+    scope: z.nativeEnum(ProductScope).optional(),
     strength: z.string().optional(),
     dosageForm: z.string().optional(),
     composition: z.string().optional(),
@@ -73,9 +74,10 @@ export const updateProductSchema = z.object({
     name: z.string().optional(),
     genericName: z.string().optional(),
     brandName: z.string().optional(),
-    category: z.string().optional(),
+    categories: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     productType: z.nativeEnum(ProductType).optional(),
+    scope: z.nativeEnum(ProductScope).optional(),
     strength: z.string().optional(),
     dosageForm: z.string().optional(),
     composition: z.string().optional(),

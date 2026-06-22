@@ -10,6 +10,12 @@ export enum CategoryScope {
   INTERNATIONAL = 'international',
 }
 
+export enum ProductScope {
+  DOMESTIC = 'domestic',
+  INTERNATIONAL = 'international',
+  BOTH = 'both',
+}
+
 export enum ProductStatus {
   DRAFT = 'draft',
   PUBLISHED = 'published',

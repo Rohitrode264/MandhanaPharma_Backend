@@ -4,7 +4,7 @@ import { User } from './models/User.model';
 import { Tag } from './models/Tag.model';
 import { Category } from './models/Category.model';
 import { Product } from './models/Product.model';
-import { UserRole, CategoryScope, ProductType, ProductStatus } from './constants/enums';
+import { UserRole, ProductType, ProductStatus, ProductScope } from './constants/enums';
 
 const seedData = async () => {
   try {
@@ -43,56 +43,43 @@ const seedData = async () => {
     console.log('Creating categories...');
     await Category.deleteMany({ slug: { $in: ['prescription-medicines', 'cardiology', 'antibiotics', 'otc-wellness', 'pain-relief'] } });
 
-    // Parent: Prescription Medicines
+    // Category: Prescription Medicines
     const parentPrescription: any = await Category.create({
       name: 'Prescription Medicines',
       slug: 'prescription-medicines',
-      scope: CategoryScope.DOMESTIC,
       description: 'Medicines requiring a valid doctor prescription.',
       isActive: true,
-      sortOrder: 1,
     });
 
-    // Subcategories of Prescription Medicines
+    // Category: Cardiology
     const catCardiology: any = await Category.create({
       name: 'Cardiology',
       slug: 'cardiology',
-      scope: CategoryScope.DOMESTIC,
       description: 'Heart and cardiovascular system medications.',
-      parentCategory: parentPrescription._id,
       isActive: true,
-      sortOrder: 1,
     });
 
     const catAntibiotics: any = await Category.create({
       name: 'Antibiotics',
       slug: 'antibiotics',
-      scope: CategoryScope.DOMESTIC,
       description: 'Bacterial infection treatments.',
-      parentCategory: parentPrescription._id,
       isActive: true,
-      sortOrder: 2,
     });
 
-    // Parent: OTC & Wellness
+    // Category: OTC & Wellness
     const parentOTC: any = await Category.create({
       name: 'OTC & Wellness',
       slug: 'otc-wellness',
-      scope: CategoryScope.DOMESTIC,
       description: 'Over-the-counter self-care and wellness products.',
       isActive: true,
-      sortOrder: 2,
     });
 
-    // Subcategory of OTC
+    // Category: Pain Relief
     const catPainRelief: any = await Category.create({
       name: 'Pain Relief',
       slug: 'pain-relief',
-      scope: CategoryScope.DOMESTIC,
       description: 'Pain management medications.',
-      parentCategory: parentOTC._id,
       isActive: true,
-      sortOrder: 1,
     });
 
     console.log('Categories created successfully!');
@@ -107,9 +94,10 @@ const seedData = async () => {
       slug: 'lipitor-10mg',
       genericName: 'Atorvastatin',
       brandName: 'Pfizer',
-      category: catCardiology._id,
+      categories: [catCardiology._id],
       tags: [heartCareTag._id, bestSellerTag._id],
       productType: ProductType.TABLET,
+      scope: ProductScope.DOMESTIC,
       strength: '10mg',
       dosageForm: 'Oral Tablet',
       composition: 'Atorvastatin Calcium 10mg',
@@ -149,9 +137,10 @@ const seedData = async () => {
       slug: 'amoxil-500mg',
       genericName: 'Amoxicillin',
       brandName: 'GSK',
-      category: catAntibiotics._id,
+      categories: [catAntibiotics._id],
       tags: [infectionsTag._id],
       productType: ProductType.CAPSULE,
+      scope: ProductScope.BOTH,
       strength: '500mg',
       dosageForm: 'Capsule',
       composition: 'Amoxicillin Trihydrate 500mg',
@@ -191,9 +180,10 @@ const seedData = async () => {
       slug: 'crocin-pain-relief',
       genericName: 'Paracetamol & Caffeine',
       brandName: 'Haleon',
-      category: catPainRelief._id,
+      categories: [catPainRelief._id],
       tags: [painManagementTag._id, bestSellerTag._id],
       productType: ProductType.TABLET,
+      scope: ProductScope.INTERNATIONAL,
       strength: '650mg / 50mg',
       dosageForm: 'Oral Tablet',
       composition: 'Paracetamol 650mg, Caffeine 50mg',

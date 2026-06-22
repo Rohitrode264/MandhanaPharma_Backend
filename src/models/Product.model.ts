@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { ProductStatus, ProductType } from '../constants/enums';
+import { ProductStatus, ProductType, ProductScope } from '../constants/enums';
 
 interface IPackaging {
   size?: string;
@@ -47,9 +47,10 @@ export interface IProduct extends Document {
   slug: string;
   genericName?: string;
   brandName?: string;
-  category: mongoose.Types.ObjectId;
+  categories: mongoose.Types.ObjectId[];
   tags: mongoose.Types.ObjectId[];
   productType: ProductType;
+  scope: ProductScope;
   strength?: string;
   dosageForm?: string;
   composition?: string;
@@ -79,9 +80,10 @@ const ProductSchema: Schema = new Schema(
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
     genericName: { type: String, trim: true },
     brandName: { type: String, trim: true },
-    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    categories: [{ type: Schema.Types.ObjectId, ref: 'Category', required: true }],
     tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
     productType: { type: String, enum: Object.values(ProductType), required: true },
+    scope: { type: String, enum: Object.values(ProductScope), required: true, default: ProductScope.DOMESTIC },
     strength: { type: String },
     dosageForm: { type: String },
     composition: { type: String },
@@ -142,7 +144,7 @@ const ProductSchema: Schema = new Schema(
 
 // Indexes for fast querying
 ProductSchema.index({ slug: 1 });
-ProductSchema.index({ category: 1, status: 1 });
+ProductSchema.index({ categories: 1, status: 1 });
 ProductSchema.index({ tags: 1 });
 ProductSchema.index(
   {
