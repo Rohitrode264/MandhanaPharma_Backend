@@ -22,7 +22,7 @@ export class ProductService {
     const filter: any = {};
 
     if (status) filter.status = status;
-    if (category) filter.category = category;
+    if (category) filter.categories = category;
     if (productType) filter.productType = productType;
     if (tags) filter.tags = { $in: tags.split(',') };
 
@@ -41,7 +41,7 @@ export class ProductService {
     }
 
     const products = await Product.find(filter)
-      .populate('category', 'name slug scope')
+      .populate('categories', 'name slug scope')
       .populate('tags', 'name slug')
       .sort(sortOption)
       .skip(skip)
@@ -53,7 +53,7 @@ export class ProductService {
   }
 
   static async getProductById(id: string) {
-    const product = await Product.findById(id).populate('category').populate('tags');
+    const product = await Product.findById(id).populate('categories').populate('tags');
     if (!product) throw new ApiError(404, 'Product not found');
     return product;
   }
@@ -63,7 +63,7 @@ export class ProductService {
     if (requirePublished) {
       filter.status = ProductStatus.PUBLISHED;
     }
-    const product = await Product.findOne(filter).populate('category').populate('tags');
+    const product = await Product.findOne(filter).populate('categories').populate('tags');
     if (!product) throw new ApiError(404, 'Product not found');
     return product;
   }

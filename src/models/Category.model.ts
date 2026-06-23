@@ -1,14 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { CategoryScope } from '../constants/enums';
 
 export interface ICategory extends Document {
   name: string;
   slug: string;
-  scope: CategoryScope;
   description?: string;
-  parentCategory?: mongoose.Types.ObjectId;
   isActive: boolean;
-  sortOrder: number;
 }
 
 const CategorySchema: Schema = new Schema(
@@ -25,26 +21,12 @@ const CategorySchema: Schema = new Schema(
       lowercase: true,
       trim: true,
     },
-    scope: {
-      type: String,
-      enum: Object.values(CategoryScope),
-      required: true,
-    },
     description: {
       type: String,
-    },
-    parentCategory: {
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
-      default: null,
     },
     isActive: {
       type: Boolean,
       default: true,
-    },
-    sortOrder: {
-      type: Number,
-      default: 0,
     },
   },
   {

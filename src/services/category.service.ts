@@ -13,7 +13,7 @@ export class CategoryService {
   }
 
   static async getCategories(query: any = {}) {
-    return await Category.find(query).sort({ sortOrder: 1, createdAt: -1 });
+    return await Category.find(query).sort({ name: 1, createdAt: -1 });
   }
 
   static async updateCategory(id: string, data: any) {
