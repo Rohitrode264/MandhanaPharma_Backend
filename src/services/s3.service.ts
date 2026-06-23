@@ -12,12 +12,21 @@ const s3Client = new S3Client({
 
 export class S3Service {
   static async uploadFile(file: Express.Multer.File): Promise<string> {
-    if (!env.aws.accessKeyId || !env.aws.secretAccessKey || !env.aws.bucketName) {
-      throw new ApiError(500, 'AWS S3 is not configured in this environment. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_S3_BUCKET_NAME in the env.');
+    if (
+      !env.aws.accessKeyId ||
+      !env.aws.secretAccessKey ||
+      !env.aws.bucketName
+    ) {
+      throw new ApiError(
+        500,
+        'AWS S3 is not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_S3_BUCKET_NAME.'
+      );
     }
 
     const fileExtension = file.originalname.split('.').pop();
-    const fileName = `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExtension}`;
+    const fileName = `${file.fieldname}-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}.${fileExtension}`;
 
     const command = new PutObjectCommand({
       Bucket: env.aws.bucketName,
@@ -28,14 +37,14 @@ export class S3Service {
 
     try {
       await s3Client.send(command);
-      if (env.aws.cloudfrontUrl) {
-        const cfBase = env.aws.cloudfrontUrl.replace(/\/$/, '');
-        return `${cfBase}/${fileName}`;
-      }
+
       return `https://${env.aws.bucketName}.s3.${env.aws.region}.amazonaws.com/${fileName}`;
     } catch (err: any) {
       console.error('S3 upload error:', err);
-      throw new ApiError(500, `Failed to upload image to S3: ${err.message}`);
+      throw new ApiError(
+        500,
+        `Failed to upload file to S3: ${err.message}`
+      );
     }
   }
 }
