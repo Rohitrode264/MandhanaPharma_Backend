@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { Product } from '../models/Product.model';
 import { generateUniqueSlug } from '../utils/slugify';
 import { ApiError } from '../utils/ApiError';
-import { ProductStatus } from '../constants/enums';
+import { ProductStatus, ProductScope } from '../constants/enums';
 
 export class ProductService {
   static async createProduct(data: any, userId: string) {
@@ -18,7 +18,7 @@ export class ProductService {
   }
 
   static async getProducts(query: any = {}) {
-    const { page = 1, limit = 10, search, category, tags, productType, status, sort } = query;
+    const { page = 1, limit = 10, search, category, tags, productType, status, sort, scope, manufacturer } = query;
     const filter: any = {};
 
     if (status) filter.status = status;
@@ -26,8 +26,27 @@ export class ProductService {
     if (productType) filter.productType = productType;
     if (tags) filter.tags = { $in: tags.split(',') };
 
+    if (scope) {
+      if (scope === 'domestic') filter.scope = { $in: [ProductScope.DOMESTIC, ProductScope.BOTH] };
+      else if (scope === 'international') filter.scope = { $in: [ProductScope.INTERNATIONAL, ProductScope.BOTH] };
+      else filter.scope = scope;
+    }
+
+    if (manufacturer) {
+      filter.manufacturer = { $regex: new RegExp(`^${manufacturer.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}$`, 'i') };
+    }
+
     if (search) {
-      filter.$text = { $search: search };
+      // Escape regex special characters to prevent RegExp syntax errors
+      const escapedSearch = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+      filter.$or = [
+        { name: new RegExp(escapedSearch, 'i') },
+        { genericName: new RegExp(escapedSearch, 'i') },
+        { brandName: new RegExp(escapedSearch, 'i') },
+        { composition: new RegExp(escapedSearch, 'i') },
+        { manufacturer: new RegExp(escapedSearch, 'i') },
+        { treatment: new RegExp(escapedSearch, 'i') }
+      ];
     }
 
     const skip = (Number(page) - 1) * Number(limit);
