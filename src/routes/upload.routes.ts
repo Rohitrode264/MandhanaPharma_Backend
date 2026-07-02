@@ -13,12 +13,13 @@ router.use(protect);
 
 router.post(
   '/',
-  uploadMemory.single('image'),
+  uploadMemory.any(),
   asyncHandler(async (req: any, res) => {
-    if (!req.file) {
+    const file = (req.files && req.files.length > 0) ? req.files[0] : req.file;
+    if (!file) {
       throw new ApiError(400, 'Please select a file to upload.');
     }
-    const fileUrl = await S3Service.uploadFile(req.file);
+    const fileUrl = await S3Service.uploadFile(file);
     res.status(200).json(new ApiResponse(200, { url: fileUrl }, 'File uploaded successfully'));
   })
 );

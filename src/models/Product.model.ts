@@ -53,7 +53,7 @@ export interface IProduct extends Document {
   scope: ProductScope;
   strength?: string;
   dosageForm?: string;
-  composition?: string;
+  composition?: string[];
   packaging?: IPackaging;
   manufacturer?: string;
   countryOfOrigin?: string;
@@ -86,7 +86,7 @@ const ProductSchema: Schema = new Schema(
     scope: { type: String, enum: Object.values(ProductScope), required: true, default: ProductScope.DOMESTIC },
     strength: { type: String },
     dosageForm: { type: String },
-    composition: { type: String },
+    composition: [{ type: String }],
     packaging: {
       size: String,
       type: { type: String },

@@ -1,4 +1,5 @@
 service: mandanapharma-backend
+useDotenv: true
 
 provider:
   name: aws
@@ -7,6 +8,9 @@ provider:
   region: ap-south-1
   memorySize: 512
   timeout: 29 # API Gateway limit is 29 seconds
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
   environment:
     PORT: 5000
     NODE_ENV: ${self:provider.stage}
@@ -20,7 +24,16 @@ provider:
     FROM_EMAIL: ${env:FROM_EMAIL}
     FRONTEND_URL: ${env:FRONTEND_URL}
     AWS_S3_BUCKET_NAME: ${env:AWS_S3_BUCKET_NAME}
-    CLOUDFRONT_URL: ${env:CLOUDFRONT_URL}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - arn:aws:s3:::${env:AWS_S3_BUCKET_NAME}/*
 
 functions:
   api:

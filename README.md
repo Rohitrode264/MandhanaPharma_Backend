@@ -1,6 +1,6 @@
-# MandanaPharma Catalog Backend
+# MandhanaPharma Catalog Backend
 
-This is the production-ready MERN backend for the MandanaPharma Catalog system.
+This is the production-ready MERN backend for the MandhanaPharma Catalog system.
 
 ## Stack
 - Node.js

@@ -58,19 +58,45 @@ export class AuthService {
 
     const resetURL = `${env.frontendUrl}/reset-password/${resetToken}`;
 
-    const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('=============================================');
+      console.log('🔐 PASSWORD RESET LINK (DEV/LOCAL MODE):');
+      console.log(resetURL);
+      console.log('=============================================');
+    }
+
+    const message = `Forgot your password? Submit a request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
+        <h2 style="color: #1F2937; margin-bottom: 16px;">MandhanaPharma Password Reset</h2>
+        <p style="color: #4B5563; line-height: 1.5;">You requested a password reset for your MandhanaPharma Catalog account. Click the button below to choose a new password:</p>
+        <div style="margin: 30px 0; text-align: center;">
+          <a href="${resetURL}" style="background-color: #4CAF50; color: white; padding: 12px 28px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px -1px rgba(76, 175, 80, 0.2);">Reset Password</a>
+        </div>
+        <p style="color: #6B7280; font-size: 14px; line-height: 1.5;">If the button above doesn't work, copy and paste the following link into your browser:<br/><a href="${resetURL}" style="color: #4CAF50; word-break: break-all;">${resetURL}</a></p>
+        <hr style="border: none; border-top: 1px solid #eaeaea; margin: 24px 0;" />
+        <p style="color: #9CA3AF; font-size: 12px;">This reset link expires in 10 minutes. If you did not request a password reset, please safely ignore this email.</p>
+      </div>
+    `;
 
     try {
       await sendEmail({
         email: user.email,
-        subject: 'Your password reset token (valid for 10 min)',
+        subject: 'MandhanaPharma - Password Reset Request',
         message,
+        html,
       });
     } catch (err) {
+      console.error('Email send failed:', err);
+      if (process.env.NODE_ENV !== 'production') {
+        // In dev mode, don't throw if SMTP fails so we can still test via console.log resetURL
+        console.log('⚠️ Notice: SMTP send failed in dev mode, but reset token was generated. Use the URL printed above.');
+        return;
+      }
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
-      throw new ApiError(500, 'There was an error sending the email. Try again later!');
+      throw new ApiError(500, 'There was an error sending the email. Please check SMTP settings or try again later!');
     }
   }
 

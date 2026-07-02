@@ -16,7 +16,7 @@ const seedData = async () => {
     if (!admin) {
       console.log('No admin user found. Creating a default editor user...');
       admin = await User.create({
-        email: 'editor@mandanapharma.com',
+        email: 'editor@Mandhanapharma.com',
         password: 'Password123!',
         role: UserRole.EDITOR,
       });
@@ -30,7 +30,7 @@ const seedData = async () => {
     // 2. Insert Tags
     console.log('Creating tags...');
     await Tag.deleteMany({ slug: { $in: ['heart-care', 'infections', 'pain-management', 'best-seller', 'fda-approved'] } });
-    
+
     const heartCareTag: any = await Tag.create({ name: 'Heart Care', slug: 'heart-care', group: 'Health Conditions', isActive: true });
     const infectionsTag: any = await Tag.create({ name: 'Infections', slug: 'infections', group: 'Health Conditions', isActive: true });
     const painManagementTag: any = await Tag.create({ name: 'Pain Management', slug: 'pain-management', group: 'Health Conditions', isActive: true });
@@ -100,7 +100,7 @@ const seedData = async () => {
       scope: ProductScope.DOMESTIC,
       strength: '10mg',
       dosageForm: 'Oral Tablet',
-      composition: 'Atorvastatin Calcium 10mg',
+      composition: ['Atorvastatin Calcium 10mg'],
       packaging: {
         size: '10 Tablets',
         type: 'Strip',
@@ -143,7 +143,7 @@ const seedData = async () => {
       scope: ProductScope.BOTH,
       strength: '500mg',
       dosageForm: 'Capsule',
-      composition: 'Amoxicillin Trihydrate 500mg',
+      composition: ['Amoxicillin Trihydrate 500mg'],
       packaging: {
         size: '15 Capsules',
         type: 'Blister Pack',
@@ -186,7 +186,7 @@ const seedData = async () => {
       scope: ProductScope.INTERNATIONAL,
       strength: '650mg / 50mg',
       dosageForm: 'Oral Tablet',
-      composition: 'Paracetamol 650mg, Caffeine 50mg',
+      composition: ['Paracetamol 650mg', 'Caffeine 50mg'],
       packaging: {
         size: '15 Tablets',
         type: 'Strip',
