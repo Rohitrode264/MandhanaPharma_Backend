@@ -27,3 +27,8 @@ export const getPublicProductBySlug = asyncHandler(async (req: Request, res: Res
   const product = await ProductService.getProductBySlug(req.params.slug as string, true);
   res.status(200).json(new ApiResponse(200, product, 'Product fetched successfully'));
 });
+
+export const getPublicDosageForms = asyncHandler(async (req: Request, res: Response) => {
+  const dosageForms = await ProductService.getDistinctDosageForms();
+  res.status(200).json(new ApiResponse(200, dosageForms, 'Dosage forms fetched successfully'));
+});

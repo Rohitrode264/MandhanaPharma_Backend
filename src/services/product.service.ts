@@ -18,13 +18,16 @@ export class ProductService {
   }
 
   static async getProducts(query: any = {}) {
-    const { page = 1, limit = 10, search, category, tags, productType, status, sort, scope, manufacturer } = query;
+    const { page = 1, limit = 10, search, category, tags, productType, status, sort, scope, manufacturer, dosageForm } = query;
     const filter: any = {};
 
     if (status) filter.status = status;
     if (category) filter.categories = category;
     if (productType) filter.productType = productType;
     if (tags) filter.tags = { $in: tags.split(',') };
+    if (dosageForm) {
+      filter.dosageForm = { $regex: new RegExp(`^${dosageForm.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}$`, 'i') };
+    }
 
     if (scope) {
       if (scope === 'domestic') filter.scope = { $in: [ProductScope.DOMESTIC, ProductScope.BOTH] };
@@ -120,5 +123,10 @@ export class ProductService {
 
     await product.save();
     return product;
+  }
+
+  static async getDistinctDosageForms() {
+    const dosageForms = await Product.distinct('dosageForm', { dosageForm: { $nin: [null, ''] } });
+    return dosageForms.filter(Boolean).sort();
   }
 }
