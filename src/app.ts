@@ -35,6 +35,12 @@ app.use(cookieParser());
 // Enable CORS
 const allowedOrigins = [
   env.frontendUrl,
+  env.frontendUrl ? env.frontendUrl.replace(/\/$/, '') : '',
+  'https://www.mandhanapharma.in',
+  'https://mandhanapharma.in',
+  'https://editor.mandhanapharma.in',
+  'https://editor.mandhanapharma.in/',
+  'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
 ].filter(Boolean) as string[];

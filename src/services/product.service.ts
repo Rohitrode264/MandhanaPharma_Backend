@@ -58,8 +58,6 @@ export class ProductService {
     if (sort) {
       const [field, order] = sort.split(':');
       sortOption = { [field]: order === 'asc' ? 1 : -1 };
-    } else if (search) {
-      sortOption = { score: { $meta: 'textScore' } };
     }
 
     const products = await Product.find(filter)
