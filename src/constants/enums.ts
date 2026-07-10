@@ -33,5 +33,9 @@ export enum ProductType {
   OINTMENT = 'ointment',
   DROPS = 'drops',
   SACHET = 'sachet',
+  LOOSE_TABLET = 'loose tablet',
+  COTTON = 'cotton',
+  SURGICALS = 'surgicals',
+  ROLLER_BANDAGE = 'roller bandage',
   OTHER = 'other',
 }
